@@ -1,0 +1,239 @@
+(footprint "DFN1006-2L-BI-1"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(property "Reference" "REF**"
+		(at 0 -4 0)
+		(layer "F.SilkS")
+		(uuid "07aabe86-3b62-4109-ae7d-09e9cab27771")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "DFN1006-2L-BI-1"
+		(at 0 4 0)
+		(layer "F.Fab")
+		(uuid "cacc7058-a85e-48eb-932d-991b346a6eb8")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "72e2642a-def6-451f-8034-7857abaab569")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "9007e7d1-2528-49f4-b0d9-d2b20589d47c")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(property "LCSC Part" "C2912556"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "ae9f8802-06ec-4463-8ff0-62149821f586")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(attr smd)
+	(duplicate_pad_numbers_are_jumpers no)
+	(fp_line
+		(start -0.5 -0.3)
+		(end 0.5 -0.3)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "0f9a2ee1-fdeb-44ef-923c-fe0edec4aa98")
+	)
+	(fp_line
+		(start -0.5 0.3)
+		(end -0.5 -0.3)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "343d4469-e234-402d-8273-f595ba210f67")
+	)
+	(fp_line
+		(start 0.5 -0.3)
+		(end 0.5 0.3)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "de070c21-86ae-4490-be38-36dee527774d")
+	)
+	(fp_line
+		(start 0.5 0.3)
+		(end -0.5 0.3)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "00899210-4e9e-4b66-88e4-523bf96fb96b")
+	)
+	(fp_line
+		(start -0.9 -0.3)
+		(end -0.9 0.3)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "04a718a4-0820-45d3-addf-6813f4349e26")
+	)
+	(fp_line
+		(start -0.68 -0.4)
+		(end -0.68 -0.23)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "821b5aa8-c91d-4ef9-9e63-7e3edd15618c")
+	)
+	(fp_line
+		(start -0.68 0.4)
+		(end -0.68 0.23)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "c220eb03-415c-41e8-998f-e37f22ddbbd2")
+	)
+	(fp_line
+		(start -0.08 -0.4)
+		(end -0.68 -0.4)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "b5ddd823-f9c2-4b75-95fd-f13eedec5a9a")
+	)
+	(fp_line
+		(start -0.08 0.4)
+		(end -0.68 0.4)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "9be9bf60-1c92-4529-800a-7c9bd5071467")
+	)
+	(fp_line
+		(start 0.08 -0.4)
+		(end 0.68 -0.4)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "1be4815b-0c1b-483c-8cfe-aaf924462d78")
+	)
+	(fp_line
+		(start 0.08 0.4)
+		(end 0.68 0.4)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "057e907b-9146-49a8-ac65-1677853b838c")
+	)
+	(fp_line
+		(start 0.68 -0.4)
+		(end 0.68 -0.23)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "34551750-158e-4c0b-88ab-8cf28a8e5f18")
+	)
+	(fp_line
+		(start 0.68 0.4)
+		(end 0.68 0.23)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "9509f07d-2444-408f-aec1-e1ce51e7c0cb")
+	)
+	(fp_circle
+		(center -0.5 0.3)
+		(end -0.47 0.3)
+		(stroke
+			(width 0.06)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.Fab")
+		(uuid "4864bacf-5b6b-470f-890c-d9b9a6647e72")
+	)
+	(fp_text user "${REFERENCE}"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "a193d293-2a60-4c1b-aa50-47749d3cd80b")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(pad "1" smd rect
+		(at -0.32 0)
+		(size 0.4 0.6)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "a9579039-138a-4b0c-af32-5c41e3b716ec")
+	)
+	(pad "2" smd rect
+		(at 0.32 0)
+		(size 0.4 0.6)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "09b6c020-3ade-4860-895b-40d78e480ae7")
+	)
+	(embedded_fonts no)
+	(model "${KIPRJMOD}/lcsc.3dshapes/DFN1006-2L-BI-1.step"
+		(offset
+			(xyz 0 0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 0 0 0)
+		)
+	)
+)

@@ -1,0 +1,12 @@
+part,files,process,material,finish,qty,bbox_mm,volume_cm3,mass_g,service
+case_body,case_body.stl case_body.step,cnc,6061-T6 aluminum (titanium-tone anodised),Bead-blasted matte natural titanium anodise,1,44.7x49.0x11.4,6.27,16.9,JLCCNC 3-axis milling
+cover_glass,cover_glass.stl cover_glass.step,cnc,Aluminosilicate / sapphire crystal glass,Optically clear with printed black perimeter border,1,40.4x45.4x1.0,1.76,2.1,JLCCNC 3-axis milling
+crown_cap,crown_cap.stl crown_cap.step,cnc,6061-T6 aluminum,Knurled natural titanium anodise with orange accent ring,1,5.3x9.1x9.1,0.20,0.5,JLCCNC 3-axis milling
+side_button,side_button.stl side_button.step,cnc,6061-T6 aluminum / POM inner snap plunger,Matte natural titanium anodise,1,6.0x9.8x3.4,0.13,0.3,JLCCNC 3-axis milling
+action_button,action_button.stl action_button.step,cnc,6061-T6 aluminum / POM inner snap plunger,International orange anodise (#e8612c),1,5.2x9.8x3.4,0.10,0.3,JLCCNC 3-axis milling
+rear_cover,rear_cover.stl,sla,Ceramic-filled engineering resin (RF-transparent),Polished warm grey ceramic-look dome,1,37.8x42.2x3.8,1.69,2.0,JLC3DP SLA resin
+sensor_window,sensor_window.stl sensor_window.step,cnc,Optical acrylic / sapphire lens,Dark IR/green optically transparent lens,1,12.0x12.0x1.0,0.11,0.1,JLCCNC 3-axis milling
+strap_band,strap_band.stl,purchased,Molded fluoroelastomer with titanium buckle and lug bars,Matte orange tubular ridges (#f05a28),1,32.0x93.7x52.0,18.16,80.4,buy
+display_panel,,purchased,ZJY190S0800TG01,,1,35.0x42.0x1.5,,,https://www.lcdwiki.com/1.9inch_IPS_Module
+battery,,purchased,LP352022-220mAh,,1,20.0x22.0x3.5,,,https://www.adafruit.com/product/1570
+display_psa,,purchased,3M-9495LE-40x45,,1,40.4x45.4x0.2,,,https://www.digikey.com/en/products/detail/3m/9495LE/2649350

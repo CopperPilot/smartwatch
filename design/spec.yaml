@@ -1,0 +1,473 @@
+schema_version: rea-hardware/spec/v1
+product:
+  slug: rugged-smartwatch
+  name: Rugged 49 mm Smartwatch
+  summary: "49 mm rugged smartwatch with 1.9-inch IPS TFT display, side rotary crown encoder, side and action buttons, rear optical heart-rate sensor, rear magnetic pogo charging, and slide-in 49 mm sport band"
+  category: wearable smartwatch
+inputs:
+  images: [inputs/front.jpg, inputs/front_side.jpg, inputs/rear.jpg]
+  views:
+    front: inputs/front.jpg
+    right: inputs/front_side.jpg
+    rear: inputs/rear.jpg
+  prompt: inputs/prompt.md
+envelope:
+  width_mm: 44.0
+  height_mm: 49.0
+  depth_mm: 14.4
+  corner_radius_mm: 11.0
+  derivation: "Published 49 mm rugged smartwatch specification: 49.0 mm height x 44.0 mm width x 14.4 mm depth; verified aspect ratio and feature proportions with rea-hw measure on inputs/front.jpg, inputs/front_side.jpg, and inputs/rear.jpg"
+  front_origin_world_mm: [-5.0, 4.5, 11.2]
+fidelity:
+  out_of_scope:
+    - cellular LTE baseband and eSIM
+    - dual-frequency L1/L5 GPS receiver
+    - dive depth pressure gauge and water temperature sensor
+    - acoustic speaker siren array and beamforming microphone array
+    - wireless inductive Qi coil (implemented via rear magnetic spring pogo contacts per prompt)
+    - engraved rear case perimeter text
+  dimensions:
+    - {name: case_width, kind: overall_width, value_mm: 44.0, tol_mm: 1.5, source: "Published 49 mm smartwatch case specification (44.0 mm width)"}
+    - {name: case_height, kind: overall_height, value_mm: 49.0, tol_mm: 1.5, source: "Published 49 mm smartwatch case specification (49.0 mm height)"}
+    - {name: case_depth, kind: overall_depth, value_mm: 14.4, tol_mm: 1.5, source: "Published 49 mm smartwatch case specification (14.4 mm total thickness including domed sensor back)"}
+    - {name: case_corner_radius, kind: corner_radius, value_mm: 11.0, tol_mm: 1.5, source: "Measured plan-view corner radius from front.jpg and rear.jpg (11.0 mm)"}
+    - {name: front_bezel, kind: bezel, value_mm: 1.75, tol_mm: 0.5, source: "Prompt and front.jpg measurement: 1.5-2.0 mm raised metal rim around flat cover glass"}
+    - {name: side_wall_thickness, kind: edge_thickness, value_mm: 11.4, tol_mm: 1.5, source: "Measured from front_side.jpg and rear.jpg: lower titanium side profile excluding 3.0 mm domed sensor back"}
+    - {name: center_dome_thickness, kind: center_thickness, value_mm: 14.4, tol_mm: 1.5, source: "Published 14.4 mm total center thickness across flat front cover glass and domed rear sensor back"}
+  must_match:
+    - id: F1
+      name: 1.9-inch flat cover glass and display window
+      kind: display
+      view: front
+      center_mm: [22.0, 24.5]
+      size_mm: [32.0, 39.0]
+      implement: case
+      source: photo
+      confidence: high
+      notes: "Flat cover glass (40.4 x 45.4 x 1.0 mm) inside 1.75 mm raised metal bezel rim on 2.5 mm adhesive ledge over 35.0 x 42.0 x 1.5 mm display module and 32.0 x 39.0 mm inner aperture"
+    - id: F2
+      name: side rotary crown
+      kind: switch
+      view: right
+      center_mm: [5.7, 19.5]
+      size_mm: [9.5, 9.5]
+      implement: pcb+case
+      source: photo
+      confidence: high
+      notes: "Knurled rotary crown cap pressed onto horizontal shaft of side-mounted rotary encoder SW1 protruding through sealed bore in right crown guard"
+    - id: F3
+      name: right side button
+      kind: button
+      view: right
+      center_mm: [5.7, 32.0]
+      size_mm: [4.0, 10.5]
+      implement: pcb+case
+      source: photo
+      confidence: high
+      notes: "Pill-shaped metallic button below rotary crown on right guard actuating right-angle tactile switch SW2"
+    - id: F4
+      name: left orange action button
+      kind: button
+      view: left
+      center_mm: [5.7, 32.0]
+      size_mm: [4.0, 10.5]
+      implement: pcb+case
+      source: photo
+      confidence: high
+      notes: "Pill-shaped international-orange action button on left case wall actuating right-angle tactile switch SW3"
+    - id: F5
+      name: rear optical heart-rate sensor window
+      kind: sensor
+      view: rear
+      center_mm: [22.0, 24.5]
+      size_mm: [12.0, 12.0]
+      implement: pcb+case
+      source: photo
+      confidence: high
+      notes: "Central circular optical window in domed rear backplate over bottom-mounted MAX30102EFD+T PPG sensor U3"
+    - id: F6
+      name: rear magnetic charging contacts
+      kind: port
+      view: rear
+      center_mm: [22.0, 34.5]
+      size_mm: [6.0, 3.5]
+      implement: pcb+case
+      source: photo
+      confidence: high
+      notes: "Rear 2-pin gold-plated magnetic pogo charging contact opening on domed backplate over bottom-mounted J3 (mouth faces -Z out through rear opening)"
+fab:
+  profile: jlcpcb
+  layers: 2
+  thickness_mm: 1.0
+  assembly_sides: [top, bottom]
+electrical:
+  mcu: "ESP32-S3-MINI-1-N8 (LCSC C2913206)"
+  power: "Rear 5 V magnetic pogo charging input (J3, with TP9 on VCHG_RAW) protected by ESDLC12VLB 12 V bidirectional ESD/surge TVS clamp (D2, Vrwm = 12 V, Vbr = 14.0 V, Vc = 20 V at 6 A < 24 V), 100k bleed (R26), series 0603L050SLYR ultra-low-resistance 0.50 A hold / 1.00 A trip PPTC resettable fuse (F2, LCSC C207014, R_min = 70 mOhm, R_typ = 160 mOhm, R_1max = 350 mOhm, on VCHG_RAW -> VCHG_FUSED, tripping at 1.00 A to protect D1 1.0 A and U8 1.5 A while keeping total input IR drop < 250 mV at 500 mA), and upstream AO3401A reverse-polarity P-MOSFET (Q7, drain on VCHG_FUSED, source on VCHG_IN, gate pulled to GND by 100k R38 for full Vgs = -5 V drive and clamped by PESD5V0S1BL TVS D11 across Source-to-Gate), followed on VCHG_IN by 10 uF 35 V X5R 0603 input decoupling capacitor (C24, GRM188R6YA106MA73D) and ETA7014S2G 36 V input overvoltage protection load switch (U6, with internal soft-start controlling capacitive inrush and 135 degC thermal shutdown, programmed to 5.758 V typ / 5.521 V min / 5.996 V max OVP via 35.7k/10k 0.1% thin-film divider R27/R28 with 1k R29 and 1 uF 50 V C23 VCC filter), followed on VCHG_PROT (decoupled by 1 uF 25 V C26) by TPS2553DBVR 2.5-6.5 V (7.0 V Abs Max) 1.5 A 85 mOhm power-distribution switch with active reverse input-output voltage blocking (Irev = 0.01 uA typ / 1 uA max) and 2 us electronic current limiting (U8, LCSC C55266, EN tied to IN on VCHG_PROT, ILIM programmed by 35.7k 0.1% R41 to Ios = 667 mA min / 729 mA typ / 799 mA max < 1.0 A, OUT on VBUS), feeding MCP73832T-2ACI/OT 1S LiPo charger (U2, 6.0 V recommended / 7.0 V Abs Max, 147 mA via 6.8k R10, open-drain STAT on IO10 via 10k R23 to +3V3, 68k/100k R24/R25 digital VBUS sense divider on IO11 yielding 2.77-3.15 V > Vih_min = 2.475 V), 1S LiPo battery input (J2) protected on VBAT_IN by PESD5V0S1BL 5 V TVS diode (D9), ASMD0603SL100-12V 12 V 1.0 A hold / 2.0 A trip ultra-low-resistance (45 mOhm typ / 120 mOhm max) PPTC resettable fuse (F1), and AO3401A low-Rds(on) reverse-battery protection P-MOSFET (Q2, drain on VBAT_FUSED, source on VBAT, gate pulled to VBAT by 1M R34 and pulled to GND by BSS138K N-MOSFET Q6 gated via 100k R35 from VBAT_FUSED plus dual isolated 1N4148WS diodes D10 and D13 from VBUS feeding 100k R36 charger-side UVLO wake-up path on VBAT_WAKE and 100k R37 on VBAT_SENSE_WAKE to MMBT3904 NPN BJT Q8 and 1N5819WS Schottky diode D12 reverse-polarity lockout stage with zero battery bleed when VBUS = 0 V), AO3401A (Q1) + PMEG2010EA,115 low-leakage low-Vf MEGA Schottky (D1) single-diode-drop load-sharing power path with 1k VBUS gate pulldown (R13) and 10 uF 25 V VSYS bulk capacitor (C7), continuous TPS63031DSKR 3.3 V buck-boost converter (U4, LCSC C15516, with 1.5 uH inductor L1 WPN201610U1R5MT LCSC C97017, EN and PS/SYNC tied high to VSYS/VINA for forced PWM full-current mode, dedicated 100 nF VINA bypass C28 and 100 nF HF output bypass C3 within 1.5 mm of U4, and dual parallel 10 uF 25 V 0603 X5R output capacitors C8 and C27 at U4.1 VOUT), and continuous ME6211C18M5G-N 1.8 V 300 mA LDO (U5, CE tied to VSYS so MAX30102 VDD powers up simultaneously with VLED+)"
+  blocks:
+    - id: power
+      purpose: "5 V magnetic pogo charging input (J3, TP9 on VCHG_RAW) with 12 V bidirectional ESD/surge clamp (D2 ESDLC12VLB, Vc = 20 V at 6 A < 24 V), 100k bleed (R26), series 0603L050SLYR ultra-low-resistance 0.50 A hold / 1.00 A trip PPTC resettable fuse (F2, LCSC C207014, R_min = 70 mOhm, R_typ = 160 mOhm, R_1max = 350 mOhm, on VCHG_RAW -> VCHG_FUSED), and upstream AO3401A reverse-polarity P-MOSFET (Q7 on VCHG_FUSED -> VCHG_IN, gated via 100k R38 to GND with PESD5V0S1BL Vgs clamp D11), feeding VCHG_IN with 10 uF 35 V X5R 0603 input bypass (C24 GRM188R6YA106MA73D) and ETA7014S2G 36 V OVP load switch (U6, set to 5.758 V typ / 5.521 V min / 5.996 V max via 0.1% thin-film R27=35.7k/R28=10k with R29=1k and 1 uF 50 V C23 VCC filter, soft-starting downstream capacitance), followed on VCHG_PROT (1 uF C26 bypass) by TPS2553DBVR 2.5-6.5 V (7.0 V Abs Max) 1.5 A 85 mOhm power-distribution switch with active reverse-voltage/reverse-current blocking and 2 us current limiting (U8, LCSC C55266, EN tied to IN on VCHG_PROT, ILIM set by 35.7k 0.1% R41 to 667-799 mA, OUT on VBUS), MCP73832T-2ACI/OT 1S LiPo linear charger programmed to 147 mA (R10=6.8k) with 3.3 V-safe open-drain STAT telemetry (R23=10k to +3V3 on IO10) and 68k/100k digital VBUS sense divider (R24=68k/R25=100k to IO11), battery connector (J2) protected on VBAT_IN by PESD5V0S1BL 5 V TVS (D9), series ASMD0603SL100-12V 12 V 1 A hold / 45 mOhm PPTC resettable fuse (F1), and AO3401A reverse-polarity protection P-FET (Q2) controlled by 1M gate pull-up (R34), BSS138K N-FET (Q6), 100k battery sense resistor (R35), and dual isolated 1N4148WS diodes (D10 on VBAT_WAKE -> 100k R36, D13 on VBAT_SENSE_WAKE -> 100k R37) VBUS wake-up and reverse-polarity lockout paths (producing Vgs(Q6) = 2.07-2.45 V at VBAT_FUSED = 0 V while eliminating battery bleed when VBUS = 0 V and restoring full Vgs(Q6) = V_VBAT_FUSED) with MMBT3904 NPN BJT (Q8) and 1N5819WS Schottky clamp (D12), AO3401A P-FET (Q1) + PMEG2010EA,115 low-leakage Schottky (D1) load-sharing switch with 1k gate pulldown (R13) and 10 uF 25 V VSYS bulk capacitance (C7), 1M/1M ultra-low-current VBAT ADC divider (R11/R12 + 100 nF C5), continuous TPS63031DSKR 3.3 V buck-boost regulator (U4, LCSC C15516) with 1.5 uH inductor (L1 WPN201610U1R5MT, LCSC C97017), EN and PS/SYNC tied high to VSYS, local 100 nF VINA bypass (C28) and 100 nF VOUT bypass (C3) within 1.5 mm, and 2x10 uF 25 V 0603 X5R output capacitors (C8, C27) at U4.1, and continuous ME6211C18M5G-N 1.8 V LDO (U5, CE tied to VSYS)"
+      key_parts: [YZT0755-20028-02025-01, SM02B-SRSS-TB(LF)(SN), ASMD0603SL100-12V, 0603L050SLYR, ESDLC12VLB, ETA7014S2G, TPS2553DBVR, MCP73832T-2ACI/OT, AO3401A, BSS138K, MMBT3904, 1N4148WS, 1N5819WS, "PMEG2010EA,115", TPS63031DSKR, WPN201610U1R5MT, ME6211C18M5G-N]
+      reference: "TI TPS2553 Datasheet (SLVS841G) Section 8.3.2 & 8.5.1, ETA Solutions ETA7014 Datasheet, Microchip MCP73832 Datasheet Section 6.0 Typical Application & TI TPS63031 Datasheet (SLVS696) Section 9.2"
+    - id: mcu
+      purpose: "ESP32-S3-MINI-1-N8 BLE 5.0 + Wi-Fi MCU module with 32.768 kHz RTC crystal (Y1 + 20 pF C21/C22 on IO15/IO16 for C_eff = 12.5 pF), RC EN reset network, TPS3421EGDRYR 7.5 s long-press push-button hardware reset controller (U9 on BTN_SIDE_SW -> MCU_EN), GPIO0 boot strapping, 22 Ohm series termination resistors (R15, R16) and PESD5V0U1BL ultra-low-capacitance ESD diodes (D3, D4) on USB D+/D-, and rear-side B.Cu test pads (TP1-TP9 including GND, +3V3, VCHG_RAW) for factory flashing"
+      key_parts: [ESP32-S3-MINI-1-N8, TPS3421EGDRYR, Q13FC13500004, 0402CG200J500NT, PESD5V0U1BL]
+      reference: "Espressif ESP32-S3-MINI-1 Datasheet Section 5 Peripheral Schematics & TI TPS3421 Datasheet"
+    - id: display_ui
+      purpose: "12-pin 0.5 mm double-sided FPC connector (J1, FPC-05FB-12PH20) for 1.9-inch ST7789V2 SPI IPS display (GMT169-01 / ZJY190S0800TG01) with local +3V3 logic decoupling (C15, C16) and 100k pull-up resistors (R39, R40) on LCD_CS and LCD_RES, dedicated LEDA backlight anode powered from VSYS (decoupled by 1 uF C25) and regulated by CAT4002ASD-GT3 2-channel low-dropout linear constant-current LED driver (U7, LED1+LED2 paralleled on LCD_LEDK for 41.7 mA total via R14=3.6k on RSET per 125x mirror ratio, dimmed on U7.1 EN/DIM via RTC GPIO21 / LCD_BL_DIM with 100k pulldown R17 using the CAT4002A 1-wire EZDim 32-level serial pulse-counting protocol: 1 to 31 low pulses of 1-50 us width, held static high between brightness changes and low >= 5 ms for shutdown), Alps EC05E1220203 horizontal-shaft rotary crown encoder (SW1), and two Alps SKRTLAE010 side-actuated tactile buttons (SW2, SW3) with 10k pull-ups (R3-R6) and PESD5V0S1BL bidirectional ESD TVS diodes (D5-D8) at the switch terminals, plus 10k series current-limiting/ESD-isolation resistors (R30-R33) feeding 10 nF encoder filter capacitors (C17, C18, limiting SW1 contact discharge current to <= 0.33 mA) and 100 nF button debounce capacitors (C19, C20)"
+      key_parts: [FPC-05FB-12PH20, CAT4002ASD-GT3, EC05E1220203, SKRTLAE010, PESD5V0S1BL]
+      reference: "Sitronix ST7789V2 4-wire SPI Application Circuit, onsemi CAT4002A Datasheet Figure 12 EN/DIM Timing & Alps Alpine EC05E / SKRT Series Application Notes"
+    - id: heart_rate
+      purpose: "MAX30102EFD+T optical PPG heart-rate and SpO2 sensor on bottom side of PCB powered by continuous 1.8 V VDD (U5, CE tied to VSYS so VDD powers up with VLED+; standby controlled via 0.7 uA I2C software shutdown) and isolated VSYS VLED+ (C6, C14), connected via 3-channel BSS138K low-capacitance (Ciss = 25 pF, Coss = 9.7 pF) sub-1V-threshold (Vgs(th) 0.4-1.0 V) bidirectional 1.8 V <-> 3.3 V level translators (Q3-Q5, with 1.8k I2C pull-ups R7, R8 to +1V8 and R20, R21 to +3V3 for 400 kHz Fast-Mode rise time tr ~ 70 ns << 300 ns, and 10k pull-ups R9 to +1V8 and R22 to +3V3 for active-low interrupt INT) to ESP32-S3"
+      key_parts: [MAX30102EFD+T, BSS138K]
+      reference: "Maxim/Analog Devices MAX30102 Datasheet Figure 9 Typical Operating Circuit & ElecSuper BSS138K Datasheet"
+  nets_must_connect:
+    - ["J3.1", "F2.1"]
+    - ["F2.2", "Q7.3"]
+    - ["J3.1", "TP9.1"]
+    - ["Q7.2", "U6.4"]
+    - ["U6.3", "U8.1"]
+    - ["U8.1", "U8.3"]
+    - ["U8.5", "R41.1"]
+    - ["U8.6", "U2.4"]
+    - ["U8.6", "D10.2"]
+    - ["U8.6", "D13.2"]
+    - ["D10.1", "R36.1"]
+    - ["D13.1", "R37.1"]
+    - ["R36.2", "Q6.1"]
+    - ["R37.2", "Q8.1"]
+    - ["Q8.1", "D12.2"]
+    - ["Q8.2", "F1.2"]
+    - ["Q8.3", "Q6.1"]
+    - ["J2.1", "F1.1"]
+    - ["F1.2", "Q2.3"]
+    - ["F1.2", "R35.1"]
+    - ["R35.2", "Q6.1"]
+    - ["Q6.3", "Q2.1"]
+    - ["Q2.2", "U2.3"]
+    - ["U4.1", "U1.3"]
+    - ["U4.1", "U4.10"]
+    - ["U4.2", "L1.2"]
+    - ["U4.4", "L1.1"]
+    - ["U4.5", "U4.6"]
+    - ["U4.5", "U4.7"]
+    - ["U4.5", "U4.8"]
+    - ["U5.1", "U5.3"]
+    - ["U5.5", "U3.11"]
+    - ["Q1.2", "U3.9"]
+    - ["U3.2", "Q3.2"]
+    - ["Q3.3", "U1.12"]
+    - ["U3.3", "Q4.2"]
+    - ["Q4.3", "U1.11"]
+    - ["U3.13", "Q5.2"]
+    - ["Q5.3", "U1.10"]
+    - ["SW1.A", "R30.1"]
+    - ["R30.2", "U1.16"]
+    - ["SW1.B", "R31.1"]
+    - ["R31.2", "U1.17"]
+    - ["SW2.1", "R32.1"]
+    - ["SW2.1", "U9.3"]
+    - ["U9.1", "U1.45"]
+    - ["R32.2", "U1.18"]
+    - ["SW3.1", "R33.1"]
+    - ["R33.2", "U1.21"]
+    - ["J1.3", "Q1.2"]
+    - ["J1.2", "U7.4"]
+    - ["J1.2", "U7.6"]
+    - ["U7.1", "U1.25"]
+    - ["U7.2", "R14.1"]
+    - ["J1.7", "U1.35"]
+    - ["J1.8", "U1.37"]
+    - ["J1.8", "R39.2"]
+    - ["J1.9", "U1.31"]
+    - ["J1.10", "U1.33"]
+    - ["J1.11", "U1.34"]
+    - ["J1.11", "R40.2"]
+board:
+  width_mm: 34.0
+  height_mm: 40.0
+  corner_radius_mm: 6.0
+  mounting_holes:
+    - {x_mm: 4.0, y_mm: 5.5, drill_mm: 1.8}
+    - {x_mm: 30.0, y_mm: 5.5, drill_mm: 1.8}
+    - {x_mm: 4.0, y_mm: 34.5, drill_mm: 1.8}
+    - {x_mm: 30.0, y_mm: 34.5, drill_mm: 1.8}
+  placement:
+    - {ref: U1, role: mcu_ble, side: top, x_mm: 17.0, y_mm: 9.0, rot_deg: 0, tolerance_mm: 1.0}
+    - {ref: SW1, role: crown_encoder, side: top, x_mm: 31.8, y_mm: 15.0, feature: F2, tolerance_mm: 1.0}
+    - {ref: SW2, role: side_button, side: top, x_mm: 32.0, y_mm: 27.5, feature: F3, tolerance_mm: 1.0}
+    - {ref: SW3, role: action_button, side: top, x_mm: 2.0, y_mm: 27.5, feature: F4, tolerance_mm: 1.0}
+    - {ref: J1, role: display_fpc, side: top, x_mm: 14.0, y_mm: 37.2, rot_deg: 0, tolerance_mm: 1.0}
+    - {ref: J2, role: battery_conn, side: top, x_mm: 23.5, y_mm: 37.4, rot_deg: 0, tolerance_mm: 1.0}
+    - {ref: U3, role: heart_rate_sensor, side: bottom, x_mm: 17.0, y_mm: 20.0, feature: F5, tolerance_mm: 1.0}
+    - {ref: J3, role: charging_contacts, side: bottom, x_mm: 17.0, y_mm: 30.0, feature: F6, tolerance_mm: 1.0}
+  max_component_height_mm:
+    top: 7.3
+    bottom: 3.0
+bom:
+  - {refs: [U1], role: mcu_ble, mpn: ESP32-S3-MINI-1-N8, lcsc: C2913206, footprint: "lcsc:BULETM-SMD_ESP32-S3-MINI-1-N8", description: "2.4 GHz Wi-Fi + BLE 5.0 MCU module with 8 MB Flash and PCB antenna"}
+  - {refs: [SW1], role: crown_encoder, mpn: EC05E1220203, lcsc: C390930, footprint: "lcsc:SW-SMD_EC05E1220203", description: "Alps Alpine 5 mm horizontal-shaft surface-mount rotary encoder"}
+  - {refs: [SW2, SW3], role: side_tactile_switch, mpn: SKRTLAE010, lcsc: C110293, footprint: "lcsc:KEY-SMD_SKRTLAE010", description: "Alps Alpine side-actuated right-angle SMD tactile switch 4.5x3.4x3.3 mm"}
+  - {refs: [U3], role: heart_rate_sensor, mpn: MAX30102EFD+T, lcsc: C6454833, footprint: "lcsc:OESIP-14_L5.6-W3.3-P0.80-TL", description: "Integrated optical pulse oximetry and heart-rate PPG sensor module"}
+  - {refs: [J1], role: display_fpc, mpn: FPC-05FB-12PH20, lcsc: C2856829, footprint: "lcsc:FPC-SMD_12P-P0.50_XUNPU_FPC-05FB-12PH20", description: "12-pin 0.5 mm pitch right-angle double-sided contact FPC connector"}
+  - {refs: [J2], role: battery_conn, mpn: "SM02B-SRSS-TB(LF)(SN)", lcsc: C160402, footprint: "lcsc:CONN-SMD_2P-P1.00_SM02B-SRSS-TB-LF-SN", description: "JST-SH 2-pin 1.0 mm pitch right-angle SMD wire-to-board header"}
+  - {refs: [J3], role: charging_contacts, mpn: YZT0755-20028-02025-01, lcsc: C5280828, footprint: "lcsc:CONN-SMD_YZT0755-20028-02025-01", description: "2-pin 2.5 mm pitch SMD magnetic spring pogo charging contact receptacle"}
+  - {refs: [U2], role: battery_charger, mpn: MCP73832T-2ACI/OT, lcsc: C38066, footprint: "lcsc:SOT-23-5_L3.0-W1.7-P0.95-LS2.8-BL", description: "Single-cell Li-Ion/Li-Po charge management controller with open-drain STAT output"}
+  - {refs: [U4], role: buck_boost_3v3, mpn: TPS63031DSKR, lcsc: C15516, footprint: "lcsc:SON-10_L2.5-W2.5-P0.50-TL-EP", description: "3.3 V 900 mA high-efficiency single-inductor buck-boost DC-DC converter in SON-10 (1.8-5.5 V input, EN and PS/SYNC tied high to VSYS/VINA for forced fixed-frequency PWM mode during RF bursts)"}
+  - {refs: [L1], role: buck_boost_inductor_1u5, mpn: WPN201610U1R5MT, lcsc: C97017, footprint: "lcsc:IND-SMD_L2.0-W1.6", description: "1.5 uH 2.0 A / 3.2 A Isat 95 mOhm 0806 shielded power inductor for TPS63031DSKR buck-boost converter U4"}
+  - {refs: [U5], role: ldo_1v8, mpn: ME6211C18M5G-N, lcsc: C236671, footprint: "lcsc:SOT-23-5_L3.0-W1.7-P0.95-LS2.8-BR", description: "1.8 V 300 mA low-dropout linear voltage regulator for MAX30102 VDD (CE tied to VSYS)"}
+  - {refs: [U6], role: vbus_ovp_switch, mpn: ETA7014S2G, lcsc: C7465500, footprint: "lcsc:SOT-23-6_L2.9-W1.6-P0.95-LS2.8-BL", description: "36 V input overvoltage protection load switch with internal soft-start and 135 degC thermal shutdown on VCHG_IN, programmed to 5.758 V typ (5.521 V min, 5.996 V max) OVP threshold via 0.1% thin-film R27=35.7k/R28=10k"}
+  - {refs: [U7], role: backlight_led_driver, mpn: CAT4002ASD-GT3, lcsc: C890382, footprint: "lcsc:SC-70-6_L2.0-W1.3-P0.65-LS2.1-BR", description: "2-channel low-dropout (55 mV typ at 20 mA) constant-current LED driver sinking 41.7 mA total via R14=3.6k, dimmed via 1-wire EZDim 32-step pulse counting on EN/DIM"}
+  - {refs: [U8], role: vchg_power_path_switch, mpn: TPS2553DBVR, lcsc: C55266, footprint: "lcsc:SOT-23-6_L2.9-W1.6-P0.95-LS2.8-BR", description: "2.5-6.5 V (7.0 V Abs Max) 1.5 A 85 mOhm current-limited power-distribution switch downstream of U6 on VCHG_PROT -> VBUS with active reverse input-output voltage blocking (Irev = 0.01 uA typ / 1 uA max, EN tied to IN) and 2 us current limit set to 667-799 mA via R41=35.7k"}
+  - {refs: [U9], role: pb_reset_supervisor, mpn: TPS3421EGDRYR, lcsc: C2067262, footprint: "lcsc:SON-6_L1.5-W1.0-P0.50-BL", description: "250 nA push-button reset controller in SON-6 (TS=GND for 7.5 s setup delay, 400 ms active-low ~RST pulse on MCU_EN when SW2 is held)"}
+  - {refs: [F1], role: vbat_pptc_fuse, mpn: ASMD0603SL100-12V, lcsc: C48783158, footprint: "lcsc:F0603", description: "12 V 1.0 A hold / 2.0 A trip ultra-low-resistance (45 mOhm typ / 120 mOhm max) 0603 PPTC resettable fuse on battery connector J2.1 (VBAT_IN -> VBAT_FUSED)"}
+  - {refs: [F2], role: vchg_pptc_fuse, mpn: 0603L050SLYR, lcsc: C207014, footprint: "lcsc:F0603", description: "Ultra-low-resistance 0.50 A hold / 1.00 A trip (R_min = 70 mOhm, R_typ = 160 mOhm, R_1max = 350 mOhm) 0603 PPTC resettable fuse on charging input J3.1 (VCHG_RAW -> VCHG_FUSED), tripping at 1.00 A to protect D1 (1.0 A) and U8 (1.5 A) while keeping total input IR drop < 250 mV at 500 mA"}
+  - {refs: [Y1], role: rtc_crystal_32k, mpn: Q13FC13500004, lcsc: C32346, footprint: "lcsc:FC-135R_L3.2-W1.5", description: "32.768 kHz 12.5 pF 20 ppm SMD3215-2P RTC crystal oscillator"}
+  - {refs: [Q1, Q2, Q7], role: load_share_revbat_pfet, mpn: AO3401A, lcsc: C15127, footprint: "lcsc:SOT-23_L2.9-W1.3-P1.90-LS2.4-BR", description: "P-channel MOSFET (50 mOhm Rds(on)) for VBUS/VBAT automatic power-path switching (Q1), J2 battery reverse-polarity protection (Q2), and J3 charging input reverse-polarity protection (Q7)"}
+  - {refs: [Q3, Q4, Q5, Q6], role: level_shift_revbat_nfet, mpn: BSS138K, lcsc: C5224263, footprint: "lcsc:SOT-23-3_L2.9-W1.3-P1.90-LS2.4-BR", description: "Low-capacitance (Ciss = 25 pF, Coss = 9.7 pF) sub-1V-threshold (Vgs(th) = 0.4-1.0 V) 60 V N-channel MOSFET for 400 kHz Fast-Mode 1.8 V <-> 3.3 V I2C/INT level translation (Q3-Q5) and Q2 reverse-battery gate control (Q6)"}
+  - {refs: [Q8], role: revbat_lockout_npn, mpn: MMBT3904, lcsc: C909754, footprint: "lcsc:SOT-23-3_L2.9-W1.3-P1.90-LS2.4-BR", description: "40 V 200 mA NPN bipolar transistor clamping Q6 gate (VBAT_Q2_EN) to VBAT_FUSED during reverse-battery insertion while staying off at VBAT_FUSED >= 0 V"}
+  - {refs: [D1], role: load_share_schottky, mpn: "PMEG2010EA,115", lcsc: C193668, footprint: "lcsc:SOD-323_L1.8-W1.3-LS2.5-RD", description: "20 V 1 A low-Vf low-leakage (10 uA typ at 5 V) MEGA Schottky barrier rectifier for VBUS -> VSYS power path"}
+  - {refs: [D10, D13], role: pcm_wakeup_diode, mpn: 1N4148WS, lcsc: C2128, footprint: "lcsc:SOD-323_L1.8-W1.3-LS2.5-RD", description: "100 V 150 mA ultra-low-leakage (<5 nA at 4.2 V) silicon switching diodes from VBUS providing isolated wake-up bias to R36 (D10 on VBAT_WAKE -> Q6 gate) and R37 (D13 on VBAT_SENSE_WAKE -> Q8 base / D12) so zero battery bleed current flows when VBUS = 0 V"}
+  - {refs: [D12], role: revbat_sense_schottky, mpn: 1N5819WS, lcsc: C191023, footprint: "lcsc:SOD-323_L1.8-W1.3-LS2.5-RD", description: "40 V 1 A low-Vf Schottky diode clamping Q8 base (VBAT_SENSE_B) to ~0.22 V above GND so Q8 remains off at VBAT_FUSED = 0 V and saturates when VBAT_FUSED < -0.4 V"}
+  - {refs: [D2], role: vchg_esd_tvs_12v, mpn: ESDLC12VLB, lcsc: C20168169, footprint: "lcsc:DFN1006-2L-BI", description: "12 V bidirectional ESD/surge protection TVS diode (Vrwm = 12 V, Vbr = 14.0 V, Vc = 20 V at 6 A < 24 V) on charging input VCHG_RAW clamping below Q7 -30 V Vds(max) and U6 +6.0 V FB Abs Max"}
+  - {refs: [D5, D6, D7, D8, D9, D11], role: ui_vbat_esd_tvs, mpn: PESD5V0S1BL, lcsc: C2912556, footprint: "lcsc:DFN1006-2L-BI-1", description: "5 V bidirectional low-clamping ESD/TVS protection diode at rotary encoder SW1, side buttons SW2/SW3, battery connector entry VBAT_IN (D9), and Q7 Gate-Source Vgs clamp (D11)"}
+  - {refs: [D3, D4], role: usb_esd_tvs, mpn: PESD5V0U1BL, lcsc: C2827663, footprint: "lcsc:SOD-882_L1.0-W0.6-BI-1", description: "Ultra-low-capacitance (0.6 pF) bidirectional ESD protection diode on USB D-/D+ lines"}
+  - {refs: [R1, R2, R3, R4, R5, R6, R9, R22, R23, R30, R31, R32, R33], role: pullup_ovp_series_10k, mpn: 0402WGF1002TCE, lcsc: C25744, footprint: "Resistor_SMD:R_0402_1005Metric", description: "10 kOhm 1% 0402 resistor for EN, BOOT, encoder/button pull-ups (R3-R6), HR_INT pull-ups (R9, R22), CHG_STAT pull-up (R23), and encoder/button series RC current-limiting and ESD isolation (R30-R33)"}
+  - {refs: [R7, R8, R20, R21], role: pullup_i2c_1k8, mpn: 0402WGF1801TCE, lcsc: C25871, footprint: "Resistor_SMD:R_0402_1005Metric", description: "1.8 kOhm 1% 0402 resistor for 1.8 V and 3.3 V 400 kHz Fast-Mode I2C (SDA, SCL) pull-ups (tr ~ 70 ns << 300 ns limit)"}
+  - {refs: [R14], role: bl_rset_3k6, mpn: 0402WGF3601TCE, lcsc: C25891, footprint: "Resistor_SMD:R_0402_1005Metric", description: "3.6 kOhm 1% 0402 resistor programming CAT4002A backlight sink current to 41.7 mA total (20.83 mA/ch per 125x mirror ratio)"}
+  - {refs: [R10], role: chg_prog_6k8, mpn: 0402WGF6801TCE, lcsc: C25917, footprint: "Resistor_SMD:R_0402_1005Metric", description: "6.8 kOhm 1% 0402 resistor programming MCP73832 charge current to 147 mA (0.67C)"}
+  - {refs: [R11, R12, R34], role: vbat_div_1m, mpn: 0402WGF1004TCE, lcsc: C26083, footprint: "Resistor_SMD:R_0402_1005Metric", description: "1 MOhm 1% 0402 resistor for ultra-low-current (1.85 uA) VBAT ADC voltage divider (R11, R12) and Q2 gate pull-up (R34)"}
+  - {refs: [R13, R29], role: vbus_pulldown_ovp_1k, mpn: 0402WGF1001TCE, lcsc: C11702, footprint: "Resistor_SMD:R_0402_1005Metric", description: "1 kOhm 1% 0402 resistor for VBUS gate pulldown (R13) and ETA7014S2G OVP_VCC series filter/current-limiting (R29)"}
+  - {refs: [R15, R16], role: usb_term_22r, mpn: 0402WGF220JTCE, lcsc: C25092, footprint: "Resistor_SMD:R_0402_1005Metric", description: "22 Ohm 1% 0402 series termination resistor on USB D-/D+"}
+  - {refs: [R24], role: vbus_det_upper_68k, mpn: 0402WGF6802TCE, lcsc: C36871, footprint: "Resistor_SMD:R_0402_1005Metric", description: "68 kOhm 1% 0402 upper VBUS_DET divider resistor (with R25=100k yielding 0.595x = 2.77-3.15 V > ESP32-S3 digital Vih_min = 2.475 V)"}
+  - {refs: [R17, R25, R26, R35, R36, R37, R38, R39, R40], role: bias_sense_100k, mpn: 0402WGF1003TCE, lcsc: C25741, footprint: "Resistor_SMD:R_0402_1005Metric", description: "100 kOhm 1% 0402 resistor for U7 EN/DIM pulldown (R17), lower VBUS_DET divider (R25), J3 contact bleed (R26), Q6 gate sense/wake-up divider (R35, R36), Q8 base bias (R37), Q7 gate pulldown (R38), and LCD_CS/LCD_RES pull-ups (R39, R40)"}
+  - {refs: [R27, R41], role: ovp_fb_ilim_35k7_0p1, mpn: ERA-2AEB3572X, lcsc: C2075580, footprint: "Resistor_SMD:R_0402_1005Metric", description: "35.7 kOhm 0.1% 25 ppm/C thin-film 0402 resistor setting ETA7014S2G OVP trip to 5.758 V typ / 5.521 V min / 5.996 V max (R27) and TPS2553DBVR ILIM active current limit to 729 mA typ / 667-799 mA (R41)"}
+  - {refs: [R28], role: ovp_fb_10k_0p1, mpn: RT0402BRD0710KL, lcsc: C190095, footprint: "Resistor_SMD:R_0402_1005Metric", description: "10.0 kOhm 0.1% 25 ppm/C thin-film 0402 lower feedback divider resistor for ETA7014S2G OVP_FB"}
+  - {refs: [C1, C2, C3, C4, C5, C6, C15, C19, C20, C28], role: decouple_100n, mpn: CL05B104KO5NNNC, lcsc: C1525, footprint: "Capacitor_SMD:C_0402_1005Metric", description: "100 nF 16 V X7R 0402 local IC decoupling (C1 adjacent to U1.3 3V3 at 8.29, 3.85 mm; C3 adjacent to U4.1 VOUT at 16.45, 22.40 mm; C28 dedicated VINA bypass adjacent to U4.8 VINA at 14.63, 25.80 mm; C4 adjacent to U9.4 VCC at 30.10, 23.45 mm; C2, C5, C6, C15) and tactile switch SW2/SW3 RC debounce capacitor (C19, C20)"}
+  - {refs: [C17, C18], role: enc_filter_10n, mpn: CC0402KRX7R9BB103, lcsc: C60133, footprint: "Capacitor_SMD:C_0402_1005Metric", description: "10 nF 50 V X7R 0402 RC debounce filter capacitor for rotary encoder SW1 (with 10k R30/R31 limiting contact current to <= 0.33 mA)"}
+  - {refs: [C9, C10, C25, C26], role: decouple_1u, mpn: CL05A105KA5NQNC, lcsc: C52923, footprint: "Capacitor_SMD:C_0402_1005Metric", description: "1 uF 25 V X5R 0402 +1V8 output bypass (C9), EN delay (C10), CAT4002A VIN/LEDA bypass (C25), and TPS2553DBVR IN bypass on VCHG_PROT (C26) capacitor"}
+  - {refs: [C23], role: ovp_vcc_1u_50v, mpn: GRM155R61H105KE05D, lcsc: C1518208, footprint: "Capacitor_SMD:C_0402_1005Metric", description: "1 uF 50 V X5R 0402 high-voltage bypass capacitor for ETA7014S2G OVP_VCC pin"}
+  - {refs: [C24], role: vchg_in_10u_35v, mpn: GRM188R6YA106MA73D, lcsc: C194427, footprint: "Capacitor_SMD:C_0603_1608Metric", description: "10 uF 35 V X5R 0603 high-voltage input decoupling capacitor on VCHG_IN per ETA7014S2G datasheet recommendation"}
+  - {refs: [C11, C12, C16], role: bulk_4u7, mpn: CL10A475KO8NNNC, lcsc: C19666, footprint: "Capacitor_SMD:C_0603_1608Metric", description: "4.7 uF 16 V X5R 0603 charger, battery, and display FPC bulk capacitor"}
+  - {refs: [C7, C8, C13, C14, C27], role: bulk_10u, mpn: CL10A106MA8NRNC, lcsc: C96446, footprint: "Capacitor_SMD:C_0603_1608Metric", description: "10 uF 25 V X5R 0603 VSYS input bypass (C7), U4.1 +3V3 buck-boost parallel output bulk capacitors at (16.70, 23.56 mm) and (16.70, 24.85 mm) (C8, C27), U1.3 +3V3 local bulk decoupling at (8.38, 5.85 mm) (C13), and MAX30102 VLED+ bulk capacitor (C14)"}
+  - {refs: [C21, C22], role: xtal_load_20p, mpn: 0402CG200J500NT, lcsc: C1554, footprint: "Capacitor_SMD:C_0402_1005Metric", description: "20 pF 50 V 5% C0G 0402 load capacitor for 32.768 kHz RTC crystal Y1 (C_eff = 10 pF + 2.5 pF stray = 12.5 pF)"}
+purchased:
+  - id: display_panel
+    description: "1.9-inch 170x320 IPS TFT LCD display module with ST7789V2 4-wire SPI interface and 12-pin 0.5 mm pitch FPC tail (separate LEDA/LEDK backlight pins)"
+    mpn: ZJY190S0800TG01
+    url: "https://www.lcdwiki.com/1.9inch_IPS_Module"
+    dims_mm: [35.0, 42.0, 1.5]
+    position_mm: [-0.5, -41.0, 8.3]
+    connects_to: "pcba J1 via 12-pin 0.5 mm FPC cable"
+    dims_source: "GoldenMorning GMT169-01 / ZJY190S0800TG01 1.9-inch ST7789V2 IPS TFT module datasheet: 35.0 x 42.0 x 1.5 mm outline, 12-pin 0.5 mm pitch soldered/plug-in FPC tail (pin 1 GND, pin 2 LEDK, pin 3 LEDA, pin 4 VDD, pins 5-6 GND, pin 7 DC, pin 8 CS, pin 9 SCL, pin 10 SDA, pin 11 RES, pin 12 GND)"
+    model: case/purchased/display_panel.stl
+    color: "#2b3848"
+    connectors:
+      - {id: J_FPC, at_mm: [14.5, 1.0, 0.0], pins: 12, pitch_mm: 0.5, kind: ffc, mouth: [0, 1, 0], long_axis: [1, 0, 0]}
+  - id: battery
+    description: "3.7 V 220 mAh 1S LiPo pouch battery (352022) with integrated protection PCB and 2-pin 1.0 mm JST-SH lead"
+    mpn: LP352022-220mAh
+    url: "https://www.adafruit.com/product/1570"
+    dims_mm: [20.0, 22.0, 3.5]
+    position_mm: [7.0, -31.0, 3.8]
+    connects_to: "pcba J2 via 2-pin 1.0 mm JST-SH wire harness"
+    dims_source: "Standard 352022 LiPo pouch cell mechanical datasheet: 20.0 mm width x 22.0 mm length x 3.5 mm max thickness, 2-wire lead at bottom edge"
+    model: case/purchased/battery.stl
+    color: "#c8c8cc"
+    connectors:
+      - {id: J_BAT, at_mm: [16.5, 0.5, 0.5], pins: 2, pitch_mm: 1.0, kind: wire}
+  - id: display_psa
+    description: "Die-cut perimeter acrylic pressure-sensitive adhesive gasket bonding front cover glass to case ledge"
+    mpn: 3M-9495LE-40x45
+    url: "https://www.digikey.com/en/products/detail/3m/9495LE/2649350"
+    dims_mm: [40.4, 45.4, 0.2]
+    position_mm: [-3.2, -42.7, 9.8]
+    dims_source: "3M 9495LE 0.2 mm double-sided adhesive tape datasheet; die-cut to 40.4 x 45.4 x 0.2 mm perimeter ring matching cover glass ledge"
+    model: case/purchased/display_psa.stl
+    color: "#222222"
+cables:
+  - id: display_fpc_cable
+    kind: ffc
+    a: {part: display_panel, connector: J_FPC}
+    b: {part: pcba, connector: J1}
+    pins: 12
+    pitch_mm: 0.5
+    width_mm: 6.5
+    length_mm: 18.0
+    route:
+      - {at_mm: [14.0, -38.0, 8.3]}
+      - {at_mm: [14.0, -39.2, 5.5]}
+      - {at_mm: [14.0, -37.2, 2.0]}
+    note: "Integral 12-pin 0.5 mm FPC tail folding down from bottom edge of display_panel into double-sided contact J1 (FPC-05FB-12PH20) at bottom edge of pcba"
+  - id: battery_harness
+    kind: harness
+    a: {part: battery, connector: J_BAT}
+    b: {part: pcba, connector: J2}
+    pins: 2
+    pitch_mm: 1.0
+    width_mm: 2.0
+    length_mm: 16.0
+    route:
+      - {at_mm: [23.5, -30.5, 4.3]}
+      - {at_mm: [23.5, -38.5, 5.5]}
+      - {at_mm: [23.5, -37.4, 2.0]}
+    note: "2-wire 1.0 mm JST-SH battery lead routed from bottom of LiPo cell to J2 at bottom edge of pcba"
+enclosure:
+  process: cnc
+  wall_mm: 2.0
+  clearance_floor_mm: 0.2
+  parts:
+    - id: case_body
+      file: case/out/case_body.stl
+      role: shell
+      process: cnc
+      material: "6061-T6 aluminum (titanium-tone anodised)"
+      finish: "Bead-blasted matte natural titanium anodise"
+      color: "#b8b4ac"
+      description: "Main watch middle case with raised 1.75 mm front bezel rim, 1.5 mm internal cover-glass bonding ledge, right-side crown guard with sealed encoder bore and side-button slot, left-side action-button slot, and top/bottom 49 mm band lug channels"
+    - id: cover_glass
+      file: case/out/cover_glass.stl
+      role: window
+      process: cnc
+      material: "Aluminosilicate / sapphire crystal glass"
+      finish: "Optically clear with printed black perimeter border"
+      color: "#101418"
+      decor: case/out/cover_glass_decor.stl
+      decor_color: "#0b0d11"
+      description: "Flat 40.4 x 45.4 x 1.0 mm front cover glass bonded onto the front ledge of case_body inside the raised metal bezel rim"
+    - id: crown_cap
+      file: case/out/crown_cap.stl
+      role: button
+      process: cnc
+      material: "6061-T6 aluminum"
+      finish: "Knurled natural titanium anodise with orange accent ring"
+      color: "#b8b4ac"
+      decor: case/out/crown_cap_decor.stl
+      decor_color: "#f05a28"
+      description: "9.5 mm diameter knurled rotary crown cap pressed onto the 2.5 mm horizontal shaft of SW1 through the right-wall bore"
+    - id: side_button
+      file: case/out/side_button.stl
+      role: button
+      process: cnc
+      material: "6061-T6 aluminum / POM inner snap plunger"
+      finish: "Matte natural titanium anodise"
+      color: "#b8b4ac"
+      description: "Right-side pill button pushed in from outside (+X to -X) with integral snap retention barbs engaging the inner wall and pressing SW2"
+    - id: action_button
+      file: case/out/action_button.stl
+      role: button
+      process: cnc
+      material: "6061-T6 aluminum / POM inner snap plunger"
+      finish: "International orange anodise (#e8612c)"
+      color: "#e8612c"
+      description: "Left-side pill action button pushed in from outside (-X to +X) with integral snap retention barbs engaging the inner wall and pressing SW3"
+    - id: rear_cover
+      file: case/out/rear_cover.stl
+      role: door
+      process: sla
+      material: "Ceramic-filled engineering resin (RF-transparent)"
+      finish: "Polished warm grey ceramic-look dome"
+      color: "#a8a49c"
+      decor: case/out/rear_cover_decor.stl
+      decor_color: "#888680"
+      description: "Domed RF-transparent rear sensor backplate capturing pcba and providing central optical heart-rate aperture and rear magnetic pogo charging opening"
+    - id: sensor_window
+      file: case/out/sensor_window.stl
+      role: window
+      process: cnc
+      material: "Optical acrylic / sapphire lens"
+      finish: "Dark IR/green optically transparent lens"
+      color: "#181a1e"
+      decor: case/out/sensor_window_decor.stl
+      decor_color: "#121418"
+      description: "12.0 mm circular flush optical window press-fit into the center of rear_cover over MAX30102EFD+T sensor U3"
+    - id: strap_band
+      file: case/out/strap_band.stl
+      role: strap
+      process: purchased
+      material: "Molded fluoroelastomer with titanium buckle and lug bars"
+      finish: "Matte orange tubular ridges (#f05a28)"
+      in_envelope: false
+      color: "#f05a28"
+      decor: case/out/strap_band_decor.stl
+      decor_color: "#b8b4ac"
+      description: "Bought standard 49 mm tubular fluoroelastomer sport watch band with 32.0 mm slide-in connector bars (https://www.adafruit.com/product/5600)"
+assembly:
+  - {part: case_body, travel_mm: 0, held_by: base, note: "Primary CNC watch middle case"}
+  - {part: display_panel, direction: [0, 0, -1], travel_mm: 20, may_touch: [case_body], held_by: captured, note: "Drops into front display pocket of case_body"}
+  - {part: display_psa, direction: [0, 0, -1], travel_mm: 20, may_touch: [case_body, display_panel], held_by: captured, note: "Perimeter PSA gasket seated on front cover-glass ledge of case_body"}
+  - {part: cover_glass, direction: [0, 0, -1], travel_mm: 20, may_touch: [case_body, display_psa, display_panel], held_by: adhesive, held_with: [display_psa], note: "Bonded onto 1.5 mm front ledge of case_body via display_psa"}
+  - {part: battery, direction: [0, 0, 1], travel_mm: 25, may_touch: [case_body], held_by: captured, note: "Inserted from open rear into upper internal battery pocket before pcba installation"}
+  - {part: pcba, direction: [0, 0, 1], travel_mm: 25, may_touch: [case_body], held_by: captured, note: "Main PCBA seated against internal bosses of case_body from open rear"}
+  - {part: crown_cap, direction: [-1, 0, 0], travel_mm: 20, may_touch: [case_body, pcba], held_by: press_fit, held_with: [case_body], note: "Pressed onto horizontal shaft of rotary encoder SW1 through right-side sealed bore"}
+  - {part: side_button, direction: [-1, 0, 0], travel_mm: 20, may_touch: [case_body, pcba], held_by: snap, held_with: [case_body], note: "Pushed in from right side (-X) until snap barbs lock behind right case wall"}
+  - {part: action_button, direction: [1, 0, 0], travel_mm: 20, may_touch: [case_body, pcba], held_by: snap, held_with: [case_body], note: "Pushed in from left side (+X) until snap barbs lock behind left case wall"}
+  - {part: rear_cover, direction: [0, 0, 1], travel_mm: 25, may_touch: [case_body, pcba], held_by: press_fit, held_with: [case_body], note: "Domed rear sensor cover press-fit into rear counterbore of case_body capturing pcba"}
+  - {part: sensor_window, direction: [0, 0, 1], travel_mm: 20, may_touch: [rear_cover], held_by: press_fit, held_with: [rear_cover], note: "Circular optical sensor lens press-fit into central aperture of rear_cover"}
+  - {part: strap_band, direction: [1, 0, 0], travel_mm: 48, may_touch: [case_body], held_by: strap_lock, note: "Standard 49 mm band connector bars slide sideways (+X) into top and bottom lug channels"}
+actuators:
+  - id: A_CROWN
+    feature: F2
+    case_part: crown_cap
+    target: {part: pcba, ref: SW1}
+    kind: rotate
+    element_axis: [1, 0, 0]
+    source: "Alps Alpine EC05E1220203 datasheet: horizontal shaft rotary encoder, shaft axis perpendicular to board edge (+X in world frame)"
+  - id: A_SIDE_BTN
+    feature: F3
+    case_part: side_button
+    target: {part: pcba, ref: SW2}
+    kind: push
+    element_axis: [-1, 0, 0]
+    travel_mm: 0.25
+    source: "Alps Alpine SKRTLAE010 datasheet: side-actuated right-angle SMD tactile switch, 0.15-0.25 mm travel pushed inward (-X)"
+  - id: A_ACTION_BTN
+    feature: F4
+    case_part: action_button
+    target: {part: pcba, ref: SW3}
+    kind: push
+    element_axis: [1, 0, 0]
+    travel_mm: 0.25
+    source: "Alps Alpine SKRTLAE010 datasheet: side-actuated right-angle SMD tactile switch, 0.15-0.25 mm travel pushed inward (+X)"
+  - id: A_HR_SENSOR
+    feature: F5
+    case_part: sensor_window
+    target: {part: pcba, ref: U3}
+    kind: optical
+    element_axis: [0, 0, -1]
+    range_mm: 4.0
+    source: "Analog Devices MAX30102EFD+T datasheet: optical PPG LEDs and photodetector facing -Z on bottom side of PCB through rear optical window"
+requirements:
+  - id: R1
+    text: "Rugged 49 mm smartwatch matching the reference dimensions and profile (lower case side and domed sensor back)"
+    how_met: "44.0 x 49.0 x 14.4 mm envelope with 11.4 mm CNC titanium-anodised side wall and 3.0 mm domed RF-transparent rear sensor cover"
+    quantity: "44.0 x 49.0 x 14.4 mm, 11.4 mm edge / 14.4 mm center"
+  - id: R2
+    text: "Fit standard 49 mm sport-style watch bands sliding sideways into lug channels"
+    how_met: "Top and bottom transverse 32.0 mm lug channels in case_body mated with purchased 49 mm tubular fluoroelastomer strap_band sliding along +X"
+    quantity: "49 mm class (32.0 mm lug bar width)"
+  - id: R3
+    text: "Same controls: rotary crown on sealed side bore, right side button, and left orange action button"
+    how_met: "Alps EC05E1220203 horizontal-shaft rotary encoder (SW1) with pressed crown_cap, plus two Alps SKRTLAE010 side-actuated tactile switches (SW2, SW3) with snap-retained side_button and action_button plungers"
+    quantity: "1 rotary encoder + 2 side-actuated tactile switches"
+  - id: R4
+    text: "1.9-inch display under flat cover glass bonded with adhesive inside thin 1.5-2 mm raised metal rim"
+    how_met: "Purchased 1.9-inch 170x320 ST7789V2 IPS TFT module (ZJY190S0800TG01 / GMT169-01, 12-pin 0.5 mm FPC) beneath 40.4 x 45.4 x 1.0 mm cover_glass bonded by 0.2 mm 3M 9495LE PSA onto 1.5 mm case ledge inside 1.75 mm bezel rim"
+    quantity: "1.9 in diagonal (31.0 x 38.0 mm active area), 1.75 mm bezel"
+  - id: R5
+    text: "Optical heart-rate tracking through rear sensor dome"
+    how_met: "MAX30102EFD+T PPG optical sensor (U3) on bottom side of PCB aligned with 12.0 mm rear optical sensor_window"
+    quantity: "18-bit I2C PPG red/IR sensor"
+  - id: R6
+    text: "Rear magnetic charging contacts with no extra side ports"
+    how_met: "YZT0755-20028-02025-01 2-pin gold-plated magnetic spring pogo receptacle (J3) on bottom of PCB exposed through rear_cover feeding 12 V bidirectional TVS D2 (ESDLC12VLB), 0603L050SLYR ultra-low-resistance 0.50 A hold / 1.00 A trip PPTC fuse F2 (C207014, R_min = 70 mOhm, R_1max = 350 mOhm), AO3401A reverse-polarity P-FET Q7, ETA7014S2G 36 V OVP load switch (U6), TPS2553DBVR 2.5-6.5 V (7.0 V Abs Max) reverse-blocking current-limited power-distribution switch (U8, R41=35.7k), and MCP73832T-2ACI/OT LiPo charger (U2)"
+    quantity: "5 V / 200 mA rear magnetic pogo charge path"
+decisions:
+  - question: "MCU and wireless architecture for wearable UI and BLE sync?"
+    choice: "ESP32-S3-MINI-1-N8 (C2913206) running at 3.3 V with local 100 nF (C1 at 8.29, 3.85 mm) and 10 uF (C13 at 8.38, 5.85 mm) decoupling placed within 1.5-2.0 mm of U1 pin 3 (3V3 at 10.02, 4.75 mm), external 32.768 kHz RTC crystal (Y1, C32346 + 20 pF C21/C22, C1554, for C_eff = 12.5 pF) on IO15/IO16, TPS3421EGDRYR reset supervisor (U9 at 31.25, 23.80 mm) with local 100 nF bypass capacitor (C4 at 30.10, 23.45 mm, 0.77 mm from U9.4 VCC), and on-module PCB antenna at the top board edge"
+    reason: "Dual-core 240 MHz Xtensa LX7 with 512 KB SRAM easily drives a 170x320 16-bit SPI display (108.8 KB frame buffer) and BLE 5.0 while the 20 ppm 32.768 kHz crystal loaded with 20 pF shunt capacitors (10 pF series + 2.5 pF stray = 12.5 pF) maintains accurate RTC timekeeping and BLE sleep timing; functionally grouping and placing C1 (100 nF) and C13 (10 uF) within 1.5-2.0 mm of U1 pad 3 (10.02, 4.75 mm) and C4 (100 nF) adjacent to U9 pad 4 (30.86, 23.30 mm) provides low-inductance high-frequency and bulk decoupling per Espressif ESP32-S3-MINI-1 and TI TPS3421 layout guidelines."
+  - question: "Power tree and datasheet limit verification across every hop?"
+    choice: "5 V rear magnetic pogo input (J3, TP9 on VCHG_RAW) -> ESDLC12VLB 12 V bidirectional ESD/surge TVS clamp (D2, Vc = 20 V at 6 A < 24 V) + 100k bleed (R26) + 0603L050SLYR ultra-low-resistance 0.50 A hold / 1.00 A trip PPTC resettable fuse (F2, LCSC C207014, R_min = 70 mOhm, R_typ = 160 mOhm, R_1max = 350 mOhm, on VCHG_RAW -> VCHG_FUSED) + AO3401A reverse-polarity P-MOSFET (Q7, drain on VCHG_FUSED, source on VCHG_IN, gate pulled to GND via 100k R38 and clamped by PESD5V0S1BL D11) -> 10 uF 35 V X5R 0603 input capacitor (C24 GRM188R6YA106MA73D) -> ETA7014S2G 36 V OVP load switch (U6, set to 5.758 V typ / 5.521 V min / 5.996 V max OVP via 35.7k/10k 0.1% thin-film R27/R28 with 1k R29 and 1 uF 50 V C23 VCC filter) -> VCHG_PROT (1 uF 25 V C26) -> TPS2553DBVR 2.5-6.5 V (7.0 V Abs Max) 1.5 A 85 mOhm current-limited power-distribution switch with active reverse input-output voltage blocking (U8, LCSC C55266, EN tied to IN on VCHG_PROT, ILIM programmed to 667-799 mA via 35.7k 0.1% R41, OUT on VBUS) + 4.7 uF C11 -> MCP73832T-2ACI/OT (U2, 6.0 V recommended / 7.0 V Abs Max, Vreg 4.20 V, Iprog 147 mA via 6.8k R10, open-drain STAT to IO10 via 10k R23 to +3V3, 68k/100k R24/R25 digital VBUS sense divider to IO11) + J2 battery connector protected on VBAT_IN by PESD5V0S1BL 5 V TVS diode (D9), ASMD0603SL100-12V 12 V 1.0 A hold / 45 mOhm PPTC resettable fuse (F1), and AO3401A reverse-polarity protection P-MOSFET (Q2, drain on VBAT_FUSED, source on VBAT, gate controlled by 1M R34, BSS138K Q6, 100k R35 from VBAT_FUSED, and dual isolated 1N4148WS diodes D10 and D13 from VBUS feeding 100k R36 UVLO wake-up path on VBAT_WAKE and 100k R37 on VBAT_SENSE_WAKE to MMBT3904 Q8 + 1N5819WS D12 reverse-battery lockout) + AO3401A (Q1) / PMEG2010EA,115 low-leakage MEGA Schottky (D1) single-diode-drop load-sharing path (with 1k VBUS pulldown R13 and 10 uF C7) -> continuous TPS63031DSKR 3.3 V buck-boost converter (U4, LCSC C15516, with 1.5 uH inductor L1 WPN201610U1R5MT LCSC C97017, EN and PS/SYNC tied high to VSYS, dedicated 100 nF VINA bypass C28 and 100 nF HF VOUT bypass C3 within 1.5 mm of U4, and 2x10 uF 25 V 0603 X5R output capacitors C8 and C27 at U4.1 VOUT) + continuous ME6211C18M5G-N 1.8 V 300 mA LDO (U5, CE tied to VSYS for MAX30102 VDD)"
+    reason: "On J3.1 (VCHG_RAW), 12 V bidirectional TVS D2 (ESDLC12VLB, Vrwm = 12 V, Vbr = 14.0 V, Vc = 20 V at 6 A) clamps both positive and negative transients within +/-20 V, keeping negative spikes well inside Q7 (AO3401A) V_DS(max) = -30 V when Q7 is off and keeping positive transients on VCHG_IN below 20 V so U6.1 (OVP_FB, driven via R27=35.7k / R28=10.0k) never exceeds 4.38 V (< 6.0 V Abs Max). Series ultra-low-resistance 0.50 A hold / 1.00 A trip PPTC resettable fuse F2 (0603L050SLYR, LCSC C207014, R_min = 70 mOhm, R_typ = 160 mOhm, R_1max = 350 mOhm) on VCHG_RAW -> VCHG_FUSED trips at 1.00 A (<= 1.25 A) to protect D1 (PMEG2010EA,115, 1.0 A max) and U8 (TPS2553DBVR, 1.5 A max) while keeping total input IR drop at 500 mA to (160 + 50 + 40 + 85) mOhm * 0.5 A = 168 mV typ (< 250 mV) and 81 mV typ (127 mV post-trip) at the 242 mA max load, while U6 opens in <1 us above 5.758 V (< 6.0 V) so F2 only ever interrupts fault currents within its <= 6.0 V pass window. Downstream on VCHG_IN, 0.1% thin-film divider R27=35.7k / R28=10.0k with ETA7014S2G V_FB = 1.26 V +/- 0.05 V (1.21-1.31 V) sets V_OVP(min) = 5.521 V (> 5.500 V normal USB vSafe5V max so 4.75-5.50 V USB input never trips OVP), V_OVP(typ) = 5.758 V, and V_OVP(max) = 5.996 V. Replacing U8 with TPS2553DBVR (LCSC C55266, 2.5-6.5 V recommended operating, 7.0 V absolute maximum, 85 mOhm typ Rds(on), active reverse-voltage blocking with 0.01 uA typ / 1 uA max reverse leakage, and 2 us electronic current limit set by R41=35.7k 0.1% to Ios = 667-799 mA < 1.0 A) provides 504 mV recommended-operating margin (6.500 V vs 5.996 V) and 1.004 V absolute-maximum margin (7.000 V vs 5.996 V) across the entire U6 OVP window, while U2 (MCP73832T-2ACI/OT) is also rated 6.0 V recommended operating / 7.0 V absolute maximum. On J2.1, splitting the wake-up diode into D10 (1N4148WS on VBUS -> VBAT_WAKE -> R36 -> Q6 gate) and D13 (1N4148WS on VBUS -> VBAT_SENSE_WAKE -> R37 -> Q8 base / D12) isolates R36 from R37/D12 when VBUS = 0 V, eliminating the 300 kOhm (12 uA) battery bleed path and restoring full V_GS(Q6) = V_VBAT_FUSED (3.0-4.2 V) during battery operation while still waking 0 V UVLO-tripped cells with V_GS(Q6) = 2.07-2.45 V and locking out reversed cells via Q8. Finally, TPS63031DSKR (U4) + 1.5 uH WPN201610U1R5MT (L1) regulates +3V3 across the full 3.0-4.2 V 1S LiPo discharge curve with U4.7 (PS/SYNC) tied high to VSYS for forced PWM full-current mode, C28 (100 nF VINA bypass) and C3 (100 nF VOUT bypass) placed within 1.5 mm of U4, and 2x10 uF 25 V 0603 X5R output capacitors (C8, C27) at U4.1."
+  - question: "Display backlight driver and flashing path?"
+    choice: "Backlight anode (LEDA, J1.3) fed from VSYS (3.5-4.6 V, bypassed by 1 uF C25) and regulated on cathode (LEDK, J1.2) by CAT4002ASD-GT3 2-channel low-dropout (55 mV typ) constant-current LED driver (U7, LED1+LED2 paralleled for 41.7 mA total via R14=3.6k on RSET per 125x mirror ratio, with 100k pull-ups R39/R40 on LCD_CS/LCD_RES) dimmed on U7.1 (EN/DIM) by ESP32-S3 RTC GPIO21 (U1.25, net LCD_BL_DIM with 100k pulldown R17) using discrete 1-wire EZDim serial pulse bursts (1 to 31 low pulses of 1-50 us width, held static high between brightness changes and low >= 5 ms for shutdown); sealed-enclosure hardware reset via TPS3421EGDRYR (U9, 7.5 s long-press on SW2 -> MCU_EN); firmware flashing via ESP32-S3 native USB D+/D- (GPIO19/GPIO20 with 22R R15/R16 and PESD5V0U1BL D3/D4) and UART0/EN/GPIO0/GND/+3V3/VCHG_RAW internal B.Cu test pads (TP1-TP9) accessed with the rear cover removed"
+    reason: "Powering LEDA from VSYS and regulating LEDK with CAT4002ASD-GT3 (55 mV typ dropout at 20.8 mA/ch, programmed to 41.7 mA total by R14=3.6k) provides 300-1400 mV of headroom above the white InGaN LED Vf (3.0-3.2 V), while 100k pull-ups R39/R40 keep LCD_CS and LCD_RES deasserted during MCU reset/deep sleep and TPS3421EGDRYR (U9) provides a 7.5 s long-press hardware reset on SW2."

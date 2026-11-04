@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: CopperPilot
+    url: https://copperpilot.ai
+    about: Design your own hardware with CopperPilot.
+  - name: Discord
+    url: https://discord.gg/yecEmkaGs8
+    about: Talk to the team and other builders.

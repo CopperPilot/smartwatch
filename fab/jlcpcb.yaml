@@ -1,0 +1,43 @@
+# JLCPCB rigid PCB + PCBA profile used by rea-hardware gates.
+# Every limit cites its source. Values are the fab's *minimums*; rea checks that the
+# KiCad project rules are no looser than these and that the routed board respects them.
+id: jlcpcb
+name: JLCPCB (standard PCB + PCBA)
+parts_source: lcsc
+retrieved: 2026-10-25
+sources:
+  pcb: https://jlcpcb.com/capabilities/pcb-capabilities
+  dimensions: https://jlcpcb.com/help/article/pcb-dimensions
+  assembly_files: https://jlcpcb.com/help/article/how-to-generate-the-bom-and-centroid-file-from-kicad
+pcb:
+  layers_allowed: [1, 2, 4, 6, 8]
+  thickness_mm_options: [0.4, 0.6, 0.8, 1.0, 1.2, 1.6, 2.0]
+  min_track_mm: {two_layer: 0.10, multilayer: 0.09}
+  min_clearance_mm: {two_layer: 0.10, multilayer: 0.09}
+  min_via_drill_mm: 0.15
+  min_via_diameter_mm: 0.25
+  min_pth_drill_mm: 0.15
+  min_npth_drill_mm: 0.50
+  min_annular_ring_mm: {two_layer: 0.05, multilayer: 0.05}  # vias (v101); 0.18 is the PTH ring
+  min_hole_to_hole_mm: 0.20
+  min_copper_to_edge_mm: 0.20
+  min_silk_line_mm: 0.15
+  min_silk_text_height_mm: 1.0
+  min_solder_mask_bridge_mm: 0.10
+  min_board_mm: [5, 5]
+  max_board_mm: [400, 500]
+assembly:
+  min_board_mm: [10, 10]          # below this, add rails / panelize (conservative; verify on order page)
+  sides: [top, bottom]
+  bom_columns: ["Comment", "Designator", "Footprint", "LCSC Part #"]
+  cpl_columns: ["Designator", "Mid X", "Mid Y", "Layer", "Rotation"]
+  part_library: [basic, extended, preferred]
+  notes: >-
+    Extended parts add a per-unique-part feeder fee. Rotation offsets are common for SOT-23 (+180)
+    and QFN (+90) packages; check the assembly preview before ordering.
+recommended:   # what rea asks agents to design to (margin over the minimums)
+  track_mm: 0.15
+  clearance_mm: 0.15
+  via_drill_mm: 0.30
+  via_diameter_mm: 0.60
+  copper_to_edge_mm: 0.30

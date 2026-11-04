@@ -1,0 +1,49 @@
+name: Design review finding
+description: Something a senior engineer would flag in the schematic, layout, enclosure or BOM.
+title: "[review] "
+labels: ["design-review"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reviewing a CopperPilot design. Concrete findings are the most useful: name the parts and nets,
+        quote the datasheet, and say what you would change.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Where is it?
+      options:
+        - Main board (hardware/rugged-smartwatch.kicad_pro)
+        - Enclosure / mechanical
+        - Cables and assembly
+        - BOM / sourcing
+        - Manufacturing files
+        - Documentation
+    validations:
+      required: true
+  - type: dropdown
+    id: severity
+    attributes:
+      label: How bad is it?
+      options:
+        - P0, must fix before fabrication (the board will not work or is unsafe)
+        - P1, should fix (works, but out of spec, fragile or wasteful)
+        - P2, worth a look (style, margin, nicer alternative)
+    validations:
+      required: true
+  - type: input
+    id: refs
+    attributes:
+      label: Reference designators and nets
+      placeholder: "U3, R12, /VBUS_PD"
+  - type: textarea
+    id: finding
+    attributes:
+      label: What is wrong, and why
+      description: Datasheet section, figure or app note if you have one.
+    validations:
+      required: true
+  - type: textarea
+    id: fix
+    attributes:
+      label: What you would change
